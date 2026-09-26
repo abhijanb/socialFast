@@ -2,12 +2,13 @@ from config import settings
 from helper import clear_access_cookie, create_access_token, hash_password, set_access_cookie, verify_password
 
 from fastapi import APIRouter, Depends, HTTPException, Response, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models import User
 from src.auth.deps import get_current_user
-from src.auth.query import getUserByEmail
+from src.auth.query import getUserByEmail, getUserByUsername
 from src.auth.request import saveUser
 from src.auth.schema import RegisterIn, RegisterOut
 from src.auth.schema import LoginIn, LoginOut
@@ -21,8 +22,16 @@ async def register(body: RegisterIn, db: AsyncSession = Depends(get_db)) -> Regi
     if existing is not None:
         raise HTTPException(status_code=400, detail="User already exists")
 
+    if await getUserByUsername(body.username, db) is not None:
+        raise HTTPException(status_code=400, detail="Username already taken")
+
     user = User(username=body.username, email=body.email, password_hash=hash_password(body.password))
-    user = await saveUser(user, db)
+    try:
+        user = await saveUser(user, db)
+    except IntegrityError:
+        # Check-then-insert race (or drifted data): unique violation anyway.
+        await db.rollback()
+        raise HTTPException(status_code=400, detail="User already exists")
     return RegisterOut(id=user.id, username=user.username, email=user.email)
 
 @router.post("/login", response_model=LoginOut, status_code=status.HTTP_200_OK)

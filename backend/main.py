@@ -1,10 +1,13 @@
 from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.staticfiles import StaticFiles
 
 from config import settings
 from database import engine
 from src.auth.router import router as auth_router
+from src.post.router import postRouter
+from src.storage.uploads import get_upload_dir
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -35,3 +38,7 @@ app.add_middleware(
 )
 
 app.include_router(auth_router)
+app.include_router(postRouter)
+
+# Serve DB-stored paths like "uploads/posts/<file>" at "/uploads/...".
+app.mount("/uploads", StaticFiles(directory=get_upload_dir()), name="uploads")
