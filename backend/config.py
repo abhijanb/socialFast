@@ -13,6 +13,9 @@ class Settings(BaseSettings):
     secret_key: str
     expiration_time: int
     frontend_url: str = "http://localhost:3000"
+    cookie_samesite: str = "lax"
+    cookie_secure: bool = False
+    cookie_path: str = "/"
 
 # Values are loaded from `.env` / environment at runtime by pydantic-settings,
 # so no explicit constructor args are needed (the type checker can't see that).

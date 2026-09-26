@@ -1,11 +1,7 @@
-from datetime import datetime, timedelta, timezone
-
-import jwt
-
 from config import settings
-from helper import hash_password, verify_password
+from helper import create_access_token, hash_password, set_access_cookie, verify_password
 
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -29,14 +25,17 @@ async def register(body: RegisterIn, db: AsyncSession = Depends(get_db)) -> Regi
     return RegisterOut(id=user.id, username=user.username, email=user.email)
 
 @router.post("/login", response_model=LoginOut, status_code=status.HTTP_200_OK)
-async def login(body: LoginIn, db: AsyncSession = Depends(get_db))-> LoginOut:
+async def login(body: LoginIn, response: Response, db: AsyncSession = Depends(get_db))-> LoginOut:
     # Implement login logic here
     user = await getUserByEmail(body.email, db)
     if user is None or not verify_password(body.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    jwt_token: str = jwt.encode({"user_id": user.id, "exp": datetime.now(timezone.utc) + timedelta(minutes=settings.expiration_time)}, settings.secret_key, algorithm="HS256") 
-    return LoginOut(message="Login successful", user=RegisterOut(id=user.id, username=user.username, email=user.email), access_token=jwt_token)
+    jwt_token: str = create_access_token({"user_id": user.id}, expires_in_seconds=settings.expiration_time)
+
+    set_access_cookie(response, key="access_token", value=jwt_token)
+
+    return LoginOut(message="Login successful", user=RegisterOut(id=user.id, username=user.username, email=user.email))
 
 
 
