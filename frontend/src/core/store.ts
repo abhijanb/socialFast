@@ -1,5 +1,5 @@
 import { configureStore } from "@reduxjs/toolkit";
-import { baseApi } from "./baseApi";
+import { baseApi } from "../app/baseApi";
 
 export const makeStore = () => {
     return configureStore({
