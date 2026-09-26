@@ -1,7 +1,9 @@
+from typing import Annotated
+
 from config import settings
 from helper import clear_access_cookie, create_access_token, hash_password, set_access_cookie, verify_password
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Response, UploadFile, status
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -10,22 +12,38 @@ from models import User
 from src.auth.deps import get_current_user
 from src.auth.query import getUserByEmail, getUserByUsername
 from src.auth.request import saveUser
-from src.auth.schema import RegisterIn, RegisterOut
+from src.auth.schema import  RegisterOut
 from src.auth.schema import LoginIn, LoginOut
+from src.storage.uploads import save_upload
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 @router.post("/register", response_model=RegisterOut, status_code=status.HTTP_201_CREATED)
-async def register(body: RegisterIn, db: AsyncSession = Depends(get_db)) -> RegisterOut:
+async def register(email:Annotated[str, Form( min_length=1, max_length=255 )],
+                   username: Annotated[str, Form( min_length=1, max_length=50 )],
+                   password: Annotated[str, Form( min_length=1, max_length=255 )],
+                   avatar: Annotated[UploadFile | None, File()] = None,
+                   db: AsyncSession = Depends(get_db)) -> RegisterOut:
     
-    existing = await getUserByEmail(body.email, db)
+    existing = await getUserByEmail(email, db)
     if existing is not None:
         raise HTTPException(status_code=400, detail="User already exists")
 
-    if await getUserByUsername(body.username, db) is not None:
+    if await getUserByUsername(username, db) is not None:
         raise HTTPException(status_code=400, detail="Username already taken")
 
-    user = User(username=body.username, email=body.email, password_hash=hash_password(body.password))
+    avatar_path = None
+    if avatar is not None:
+        # Process the uploaded avatar file
+        avatar_path = await save_upload(
+            avatar,
+            subdir="avatars",
+            allowed_content_types={"image"},
+            allowed_extensions={".jpg", ".jpeg", ".png", ".webp"},
+            max_bytes=5 * 1024 * 1024,  # 5 MB
+        )
+
+    user = User(username=username, email=email, password_hash=hash_password(password), avatar=avatar_path)
     try:
         user = await saveUser(user, db)
     except IntegrityError:

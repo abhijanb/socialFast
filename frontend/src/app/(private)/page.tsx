@@ -1,6 +1,5 @@
-export default function Home() {
+export default function FeedPage() {
   return (
-    <>
-      hello</>
+    <>feed</>
   )
 }
