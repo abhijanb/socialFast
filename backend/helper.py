@@ -1,6 +1,11 @@
 from pwdlib import PasswordHash
 
+_ph = PasswordHash.recommended()
+
 
 def hash_password(password: str) -> str:
-    ph = PasswordHash.recommended()
-    return ph.hash(password)
+    return _ph.hash(password)
+
+
+def verify_password(password: str, password_hash: str) -> bool:
+    return _ph.verify(password, password_hash)

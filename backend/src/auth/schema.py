@@ -18,4 +18,6 @@ class LoginIn(BaseModel):
 class LoginOut(BaseModel):
     message: str
     user: RegisterOut
+    access_token: str
+    token_type: str = "bearer"
 

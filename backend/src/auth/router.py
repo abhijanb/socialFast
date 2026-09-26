@@ -1,7 +1,9 @@
+from datetime import datetime, timedelta, timezone
+
 import jwt
 
-from config import Settings
-from helper import hash_password
+from config import settings
+from helper import hash_password, verify_password
 
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -30,11 +32,11 @@ async def register(body: RegisterIn, db: AsyncSession = Depends(get_db)) -> Regi
 async def login(body: LoginIn, db: AsyncSession = Depends(get_db))-> LoginOut:
     # Implement login logic here
     user = await getUserByEmail(body.email, db)
-    if user is None or user.password_hash != hash_password(body.password):
+    if user is None or not verify_password(body.password, user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
 
-    jwt_token: str  = jwt.encode({"user_id": user.id}, Settings.secret_key, algorithm="HS256")
-    return LoginOut(message="Login successful", user=RegisterOut(id=user.id, username=user.username, email=user.email))
+    jwt_token: str = jwt.encode({"user_id": user.id, "exp": datetime.now(timezone.utc) + timedelta(minutes=settings.expiration_time)}, settings.secret_key, algorithm="HS256") 
+    return LoginOut(message="Login successful", user=RegisterOut(id=user.id, username=user.username, email=user.email), access_token=jwt_token)
 
 
 
