@@ -1,7 +1,7 @@
 from config import settings
 from helper import create_access_token, hash_password, set_access_cookie, verify_password
 
-from fastapi import APIRouter, Depends, HTTPException, Response, status
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
@@ -25,7 +25,7 @@ async def register(body: RegisterIn, db: AsyncSession = Depends(get_db)) -> Regi
     return RegisterOut(id=user.id, username=user.username, email=user.email)
 
 @router.post("/login", response_model=LoginOut, status_code=status.HTTP_200_OK)
-async def login(body: LoginIn, response: Response, db: AsyncSession = Depends(get_db))-> LoginOut:
+async def login(body: LoginIn, response: Response,request:Request, db: AsyncSession = Depends(get_db))-> LoginOut:
     # Implement login logic here
     user = await getUserByEmail(body.email, db)
     if user is None or not verify_password(body.password, user.password_hash):

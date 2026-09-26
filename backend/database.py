@@ -20,7 +20,7 @@ DATABASE_URL = os.getenv(
 # 2. Create the Async Engine
 engine = create_async_engine(
     DATABASE_URL,
-    echo=True,              # Logs SQL statements to the console (set False in prod)
+    echo=False,              # Logs SQL statements to the console (set False in prod)
     pool_size=10,           # Max permanent database connections to keep open
     max_overflow=20         # Extra temporary connections under heavy load
 )
