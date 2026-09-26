@@ -10,9 +10,15 @@ export function useRegister() {
     const [registerUser, { isLoading }] = useRegisterMutation()
     const [serverError, setServerError] = useState<string | null>(null);
     const onSubmit = async (body: registerType) => {
+        const formData = new FormData();
+        formData.append("username", body.username);
+        formData.append("email", body.email);
+        formData.append("password", body.password);
+        const file = body.avatar?.[0];
+        if (file) formData.append("avatar", file);
         setServerError(null);
         try {
-            await registerUser(body).unwrap()
+            await registerUser( formData ).unwrap()
         }
         catch (e: unknown) {
             setServerError(getServerMessage(e, "Registration failed. Please try again."));

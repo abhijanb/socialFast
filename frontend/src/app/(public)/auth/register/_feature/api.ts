@@ -8,8 +8,8 @@ const registerApi = baseApi.injectEndpoints({
     overrideExisting: true,
     endpoints(build) {
         return {
-            register: build.mutation<any, registerType>({
-                query: (body: registerType) => ({
+            register: build.mutation<any, FormData>({
+                query: (body: FormData) => ({
                     url: "/auth/register", body: body, method: "POST"
                 })
             })
