@@ -72,3 +72,4 @@ def clear_access_cookie(response: Response, key: str) -> None:
         samesite=settings.cookie_samesite,  # type: ignore[arg-type]
         secure=settings.cookie_secure,
     )
+        
