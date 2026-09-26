@@ -44,7 +44,7 @@ async def store(
             allowed_extensions=ALLOWED_EXTENSIONS,
             max_bytes=MAX_IMAGE_BYTES,
         )
-    post = Post(text=text, title=title, image=image_path, user_id=current_user.id)
+    post: Post = Post(text=text, title=title, image=image_path, user_id=current_user.id)
     db.add(post)
     await db.commit()
     await db.refresh(post)
