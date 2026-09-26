@@ -1,61 +1,31 @@
 "use client";
 
-import { baseApi } from "@/app/baseApi";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { useForm } from "react-hook-form"
-import z from "zod";
+import { useRegister } from "./_feature/useRegister";
 
-const registerSchema = z.object({
-    username: z.string().min(4),
-    password: z.string().min(8),
-    email: z.email()
-})
-type registerType = z.infer<typeof registerSchema>
-
-// api
-const registerApi = baseApi.injectEndpoints({
-    endpoints(build) {
-        return {
-            register: build.mutation<any, registerType>({
-                query: (body: registerType) => ({
-                    url: "/auth/register", body: body, method: "POST"
-                })
-            })
-        }
-    },
-})
-const { useRegisterMutation } = registerApi
 
 const Page = () => {
-    const { handleSubmit, formState: { errors }, register } = useForm<registerType>({ resolver: zodResolver(registerSchema) });
-    const [registerUser] = useRegisterMutation()
-    const onSubmit = async (body: registerType) => {
-        // TODO: wire to POST /auth/register
-        try {
-            await registerUser(body).unwrap()
-        }
-        catch (e) {
-            console.log(e)
-        }
-    };
-
+    const { submit, errors, register, serverError, isLoading } = useRegister();
     return (
-        <div>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <label htmlFor="username">Username</label>
-                <input id="username" type="text" autoComplete="username" {...register("username")} />
-                {errors.username && <p>{errors.username.message}</p>}
+        <div className="flex min-h-[80vh] items-center justify-center bg-neutral-50 px-4">
+            <div className="w-full max-w-sm rounded-xl border border-neutral-200 bg-white p-6 shadow-sm">
+                <h1 className="text-xl font-semibold">Register</h1>
+                {serverError && <p role="alert" className="mt-4 rounded-md bg-red-50 px-3 py-2 text-sm text-red-700">{serverError}</p>}
+                <form onSubmit={submit} className="mt-4 flex flex-col gap-3">
+                    <label htmlFor="username" className="text-sm font-medium text-neutral-700">Username</label>
+                    <input id="username" type="text" autoComplete="username" className="rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:border-neutral-900" {...register("username")} />
+                    {errors.username && <p className="text-sm text-red-600">{errors.username.message}</p>}
 
-                <label htmlFor="email">Email</label>
-                <input id="email" type="email" autoComplete="email" {...register("email")} />
-                {errors.email && <p>{errors.email.message}</p>}
+                    <label htmlFor="email" className="text-sm font-medium text-neutral-700">Email</label>
+                    <input id="email" type="email" autoComplete="email" className="rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:border-neutral-900" {...register("email")} />
+                    {errors.email && <p className="text-sm text-red-600">{errors.email.message}</p>}
 
-                <label htmlFor="password">Password</label>
-                <input id="password" type="password" autoComplete="new-password" {...register("password")} />
-                {errors.password && <p>{errors.password.message}</p>}
+                    <label htmlFor="password" className="text-sm font-medium text-neutral-700">Password</label>
+                    <input id="password" type="password" autoComplete="new-password" className="rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm outline-none focus:border-neutral-900" {...register("password")} />
+                    {errors.password && <p className="text-sm text-red-600">{errors.password.message}</p>}
 
-                <button type="submit">Register</button>
-            </form>
+                    <button type="submit" disabled={isLoading} className="mt-2 rounded-md bg-neutral-900 py-2 text-sm font-medium text-white hover:bg-neutral-700 disabled:opacity-50">Register</button>
+                </form>
+            </div>
         </div>
     )
 }
