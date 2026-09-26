@@ -2,7 +2,7 @@
 
 Example (per-file constants at top of each route file):
     MAX_IMAGE_BYTES = 5 * 1024 * 1024
-    ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
+    ALLOWED_CONTENT_TYPES = {"image"}  # category alias for safe image types
     ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
     image_path = await save_upload(
@@ -27,6 +27,31 @@ from config import settings
 
 _CHUNK_SIZE = 1024 * 1024  # 1MB per read so oversize files fail before loading fully into RAM
 _BACKEND_ROOT = Path(__file__).resolve().parent.parent.parent
+
+# Curated safe image types. The "image" category alias expands to this set,
+# so callers can write ALLOWED_CONTENT_TYPES = {"image"} instead of
+# enumerating MIME types. Exotic/unsafe types (svg, gif, tiff, ...) stay blocked.
+IMAGE_CONTENT_TYPES = frozenset({"image/jpeg", "image/png", "image/webp"})
+CONTENT_TYPE_ALIASES = {"image": IMAGE_CONTENT_TYPES}
+
+
+def _resolve_content_types(entries: set[str]) -> set[str]:
+    """Expand category aliases to exact MIME types.
+
+    Accepts bare names ("image") and wildcard form ("image/*").
+    Anything else passes through as an exact MIME type.
+    """
+    resolved: set[str] = set()
+    for entry in entries:
+        normalized = (entry or "").strip().lower()
+        if not normalized:
+            continue
+        major = normalized[:-2] if normalized.endswith("/*") else normalized
+        if "/" not in major and major in CONTENT_TYPE_ALIASES:
+            resolved.update(CONTENT_TYPE_ALIASES[major])
+        elif normalized:
+            resolved.add(normalized)
+    return resolved
 
 
 def _format_max_bytes(limit: int) -> str:
@@ -85,12 +110,16 @@ async def save_upload(
 
     Define limits per-file at the top of each route module and pass them
     explicitly. Any omitted arg falls back to settings (global default).
+    allowed_content_types accepts exact MIME types ("image/png") and
+    category aliases ("image" or "image/*" for the curated safe image types).
     """
-    allowed_types = allowed_content_types or set(settings.upload_allowed_content_types)
+    allowed_types = _resolve_content_types(
+        allowed_content_types or set(settings.upload_allowed_content_types)
+    )
     allowed_exts = allowed_extensions or set(settings.upload_allowed_extensions)
     limit = settings.upload_max_bytes if max_bytes is None else max_bytes
 
-    if file.content_type not in allowed_types:
+    if (file.content_type or "").strip().lower() not in allowed_types:
         raise HTTPException(status_code=400, detail="Invalid file type")
 
     ext = Path(file.filename or "").suffix.lower()

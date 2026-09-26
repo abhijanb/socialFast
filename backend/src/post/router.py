@@ -13,7 +13,7 @@ from src.storage.uploads import save_upload
 postRouter = APIRouter(prefix="/post", tags=["post"])
 
 MAX_IMAGE_BYTES = 5 * 1024 * 1024
-ALLOWED_CONTENT_TYPES = {"image/jpeg", "image/png", "image/webp"}
+ALLOWED_CONTENT_TYPES = {"image"}
 ALLOWED_EXTENSIONS = {".jpg", ".jpeg", ".png", ".webp"}
 
 
