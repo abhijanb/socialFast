@@ -1,5 +1,7 @@
 import { baseApi } from "@/app/baseApi"
-import { registerType } from "./schema"
+import type { Profile } from "@/features/profile/api"
+
+// Keep in sync with backend: backend/src/auth/router.py register -> RegisterOut
 
 // api
 const registerApi = baseApi.injectEndpoints({
@@ -8,7 +10,7 @@ const registerApi = baseApi.injectEndpoints({
     overrideExisting: true,
     endpoints(build) {
         return {
-            register: build.mutation<any, FormData>({
+            register: build.mutation<Profile, FormData>({
                 query: (body: FormData) => ({
                     url: "/auth/register", body: body, method: "POST"
                 })

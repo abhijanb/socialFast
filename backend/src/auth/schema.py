@@ -17,6 +17,7 @@ class LoginIn(BaseModel):
     password: str = Field(min_length=1, max_length=128)
 
 class LoginOut(BaseModel):
+    status_code: int = 200
     message: str
     user: RegisterOut
 

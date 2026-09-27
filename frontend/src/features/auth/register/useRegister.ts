@@ -2,13 +2,14 @@ import { useForm } from "react-hook-form";
 import { registerSchema, registerType } from "./schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRegisterMutation } from "./api";
-import { useState } from "react";
 import { getServerMessage } from "@/core/getServerMessage";
+import { useRouter } from "next/navigation";
+import { toast } from "sonner";
 
 export function useRegister() {
     const { handleSubmit, formState: { errors }, register } = useForm<registerType>({ resolver: zodResolver(registerSchema) });
     const [registerUser, { isLoading }] = useRegisterMutation()
-    const [serverError, setServerError] = useState<string | null>(null);
+    const router = useRouter();
     const onSubmit = async (body: registerType) => {
         const formData = new FormData();
         formData.append("username", body.username);
@@ -16,16 +17,17 @@ export function useRegister() {
         formData.append("password", body.password);
         const file = body.avatar?.[0];
         if (file) formData.append("avatar", file);
-        setServerError(null);
         try {
-            await registerUser( formData ).unwrap()
+            const profile = await registerUser( formData ).unwrap()
+            toast.success(`Account created for ${profile.username} — please log in`);
+            router.replace("/auth/login");
         }
         catch (e: unknown) {
-            setServerError(getServerMessage(e, "Registration failed. Please try again."));
+            toast.error(getServerMessage(e, "Registration failed. Please try again."));
         }
     };
     return {
         submit: handleSubmit(onSubmit),
-        errors, register, serverError, isLoading
+        errors, register, isLoading
     }
 }
