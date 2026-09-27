@@ -3,6 +3,6 @@ import { env } from "@/core/env";
 
 export const baseApi = createApi({
     baseQuery:fetchBaseQuery({baseUrl:env.API_URL,credentials:"include"}),
-    tagTypes: ["Post"],
+    tagTypes: ["Post", "Profile"],
     endpoints:() => ({})
 }) 

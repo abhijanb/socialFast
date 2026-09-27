@@ -74,7 +74,7 @@ async def logout(response: Response):
 
 @router.get("/me", response_model=RegisterOut, status_code=status.HTTP_200_OK)
 async def me(user: User = Depends(get_current_user)) -> RegisterOut:
-    return RegisterOut(id=user.id, username=user.username, email=user.email)
+    return RegisterOut(id=user.id, username=user.username, email=user.email, avatar=user.avatar)
 
 
 

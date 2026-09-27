@@ -10,6 +10,7 @@ class RegisterOut(BaseModel):
     id: int
     username: str
     email: str
+    avatar: str | None = None
 
 class LoginIn(BaseModel):
     email: EmailStr

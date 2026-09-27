@@ -1,6 +1,6 @@
 "use client";
 
-import { useRegister } from "./_feature/useRegister";
+import { useRegister } from "@/features/auth/register/useRegister";
 
 
 const Page = () => {
