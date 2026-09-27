@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { CreatePostForm } from "@/features/post/create/CreatePostForm";
+import { CreatePostForm } from "@/features/post/components/CreatePostForm";
 
 export const metadata: Metadata = {
     title: "Create Post",

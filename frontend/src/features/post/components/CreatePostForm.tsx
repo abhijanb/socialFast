@@ -1,6 +1,6 @@
 "use client";
 
-import { useCreatePost } from "./useCreatePost";
+import { useCreatePost } from "../create/useCreatePost";
 
 export function CreatePostForm() {
     const { submit, errors, register, serverError, isLoading } = useCreatePost();

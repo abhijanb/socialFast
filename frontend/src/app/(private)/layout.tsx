@@ -1,6 +1,7 @@
 "use client";
 
 import { useAuthGuard } from "@/features/auth/useAuthGuard";
+import { Navbar } from "@/components/Navbar";
 
 
 export default function Layout({ children }: { children: React.ReactNode }) {
@@ -12,7 +13,7 @@ export default function Layout({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="flex min-h-screen flex-col">
-      parent
+      <Navbar />
       <main className="flex-1">{children}</main>
     </div>
   );

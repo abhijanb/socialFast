@@ -1,5 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { cn } from "@/lib/utils";
+import { getInitials } from "./getInitials";
 
 type ProfileAvatarSize = "sm" | "md" | "lg" | "xl";
 
@@ -9,17 +8,6 @@ const sizeClasses: Record<ProfileAvatarSize, string> = {
   lg: "size-16 text-lg",
   xl: "size-24 text-2xl",
 };
-
-export function getInitials(username: string): string {
-  const name = username.trim();
-  if (!name) return "?";
-  // Handle "First Last" -> "FL", "single" -> first 2 chars, "email@..." -> first 2 chars.
-  const parts = name.split(/\s+/);
-  if (parts.length >= 2) {
-    return (parts[0][0] + parts[1][0]).toUpperCase();
-  }
-  return name.slice(0, 2).toUpperCase();
-}
 
 type ProfileAvatarProps = {
   username: string;
@@ -34,12 +22,30 @@ export function ProfileAvatar({
   src,
   alt,
   size = "md",
-  className,
+  className = "",
 }: ProfileAvatarProps) {
+  const classes = `shrink-0 overflow-hidden rounded-full ${sizeClasses[size]} ${className}`.trim();
+
+  if (src) {
+    return (
+      // Backend serves small dynamic avatar uploads; next/image remote
+      // optimization adds config/cost with no LCP benefit here.
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={src}
+        alt={alt ?? username}
+        aria-label={username}
+        className={`${classes} object-cover`}
+      />
+    );
+  }
+
   return (
-    <Avatar className={cn(sizeClasses[size], className)} aria-label={username}>
-      <AvatarImage src={src ?? undefined} alt={alt ?? username} />
-      <AvatarFallback>{getInitials(username)}</AvatarFallback>
-    </Avatar>
+    <div
+      aria-label={username}
+      className={`${classes} flex items-center justify-center bg-neutral-200 font-medium text-neutral-700`}
+    >
+      {getInitials(username)}
+    </div>
   );
 }
