@@ -1,4 +1,4 @@
-from sqlalchemy import ForeignKey, String
+from sqlalchemy import ForeignKey, String, UniqueConstraint
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from database import Base
@@ -14,7 +14,8 @@ class User(Base):
     avatar: Mapped[str | None] = mapped_column(String(255), nullable=True)
 
     posts: Mapped[list["Post"]] = relationship(back_populates="user", cascade="all, delete-orphan")
-    
+    likes: Mapped[list["Like"]] = relationship(back_populates="user", cascade="all, delete-orphan")
+
 class Post(Base):
     __tablename__ = "posts"
 
@@ -25,3 +26,17 @@ class Post(Base):
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     user: Mapped["User"] = relationship(back_populates="posts")
+
+    likes: Mapped[list["Like"]] = relationship(back_populates="post", cascade="all, delete-orphan")
+
+class Like(Base):
+    __tablename__ = "likes"
+    __table_args__ = (UniqueConstraint("user_id", "post_id", name="uq_likes_user_post"),)
+
+    id: Mapped[int] = mapped_column(primary_key=True, index=True)
+
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
+    user: Mapped["User"] = relationship(back_populates="likes")
+
+    post_id: Mapped[int] = mapped_column(ForeignKey("posts.id", ondelete="CASCADE"), index=True)
+    post: Mapped["Post"] = relationship(back_populates="likes")
