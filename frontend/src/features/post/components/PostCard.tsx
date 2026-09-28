@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { Heart } from "lucide-react";
 import { getImageUrl } from "@/core/getImageUrl";
 import type { Post } from "@/features/post/create/api";
 
@@ -6,7 +7,7 @@ export function PostCard({ post }: { post: Post }) {
     const imageSrc = post.image ? getImageUrl(post.image) : null;
     return (
         <article className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
-            <div className={`px-4 pt-4 ${imageSrc ? "" : "pb-4"}`}>
+            <div className="px-4 pt-4">
                 {post.title && <h2 className="text-base font-semibold text-neutral-900">{post.title}</h2>}
                 <p className="mt-1 text-sm leading-relaxed text-neutral-700">{post.text}</p>
             </div>
@@ -22,6 +23,11 @@ export function PostCard({ post }: { post: Post }) {
                     />
                 </div>
             )}
+            <div className="flex items-center px-4 py-3">
+                <button type="button" aria-label="Like post">
+                    <Heart className="size-6 text-neutral-600" />
+                </button>
+            </div>
         </article>
     );
 }
