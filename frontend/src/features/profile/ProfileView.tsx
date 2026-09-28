@@ -1,4 +1,5 @@
 "use client";
+import { getImageUrl } from "@/core/getImageUrl";
 import { ProfileAvatar } from "./ProfileAvatar";
 import { useGetProfileQuery } from "./api";
 
@@ -15,7 +16,7 @@ export function ProfileView() {
       <div className="flex min-h-[80vh] flex-col items-center bg-neutral-50 px-4 py-10">
         <ProfileAvatar
           username={profile.username}
-          src={profile.avatar}
+          src={profile.avatar ? getImageUrl(profile.avatar) : null}
           size="xl"
         />
         <h1 className="mt-4 text-2xl font-semibold">{profile.username}</h1>

@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { getInitials } from "./getInitials";
 
 type ProfileAvatarSize = "sm" | "md" | "lg" | "xl";
@@ -24,17 +25,17 @@ export function ProfileAvatar({
   size = "md",
   className = "",
 }: ProfileAvatarProps) {
-  const classes = `shrink-0 overflow-hidden rounded-full ${sizeClasses[size]} ${className}`.trim();
+  const classes = `relative shrink-0 overflow-hidden rounded-full ${sizeClasses[size]} ${className}`.trim();
 
   if (src) {
     return (
-      // Backend serves small dynamic avatar uploads; next/image remote
-      // optimization adds config/cost with no LCP benefit here.
-      // eslint-disable-next-line @next/next/no-img-element
-      <img
+      <Image
         src={src}
         alt={alt ?? username}
         aria-label={username}
+        fill
+        unoptimized
+        sizes="96px"
         className={`${classes} object-cover`}
       />
     );
