@@ -8,6 +8,16 @@ export type Post = {
     user_id: number;
 }
 
+export type PostPage = {
+    items: Post[];
+    next_cursor: number | null;
+};
+
+export type PostQuery = {
+    cursor?: number | null;
+    limit?: number;
+};
+
 // api
 const postApi = baseApi.injectEndpoints({
     // Fast Refresh re-evaluates this module on edit while the shared baseApi
@@ -21,8 +31,24 @@ const postApi = baseApi.injectEndpoints({
                     url: "/post/", body: formData, method: "POST"
                 }),
                 invalidatesTags: ["Post"],
-            })
+            }),
+            getPosts: build.query<PostPage, PostQuery>({
+                query: ({ cursor, limit }: PostQuery) => {
+                    // RTK Query serializes via URLSearchParams, so `null`
+                    // would become `?cursor=null` and FastAPI would reject it
+                    // with 422 int_parsing. Omit null/undefined so a missing
+                    // cursor means "first page" (`cursor=None` on backend).
+                    const params: Record<string, number> = {};
+                    if (cursor != null) params.cursor = cursor;
+                    if (limit != null) params.limit = limit;
+                    return {
+                        url: "/post/",
+                        params,
+                    };
+                },
+                providesTags: ["Post"],
+            }),
         }
     },
 })
-export const { useCreatePostMutation } = postApi
+export const { useCreatePostMutation, useGetPostsQuery } = postApi

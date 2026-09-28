@@ -1,13 +1,15 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile, status
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile, status
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from database import get_db
 from models import Post, User
 from src.auth.deps import get_current_user
+from src.post.query import getPostsPage
 from src.post.request import savePost
-from src.post.schema import PostOut
+from src.post.schema import PostOut, PostPageOut
 from src.storage.uploads import save_upload
 
 
@@ -25,7 +27,7 @@ async def store(
     image: Annotated[UploadFile | None, File()] = None,
     db: AsyncSession = Depends(get_db),
     current_user: User = Depends(get_current_user),
-):
+) -> PostOut:
     image_path: str | None = None
     if image is not None:
         # Stored in DB (String(255)); served via StaticFiles mount at /uploads.
@@ -39,8 +41,22 @@ async def store(
     post: Post = Post(text=text, title=title, image=image_path, user_id=current_user.id)
     try:
         post = await savePost(post, db)
-    except Exception as e:
+    except IntegrityError as e:
         await db.rollback()
         raise HTTPException(status_code=400, detail="Failed to create post") from e
     return PostOut(id=post.id, text=post.text, title=post.title, image=post.image, user_id=post.user_id)
 
+@postRouter.get("/", response_model=PostPageOut)
+async def index(
+    db: AsyncSession = Depends(get_db),
+    cursor: Annotated[int | None, Query(ge=1)] = None,
+    limit: Annotated[int, Query(ge=1, le=100)] = 20,
+) -> PostPageOut:
+    posts, next_cursor = await getPostsPage(db, cursor=cursor, limit=limit)
+    return PostPageOut(
+        items=[
+            PostOut(id=post.id, text=post.text, title=post.title, image=post.image, user_id=post.user_id)
+            for post in posts
+        ],
+        next_cursor=next_cursor,
+    )
