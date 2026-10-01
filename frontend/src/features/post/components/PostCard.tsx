@@ -27,7 +27,7 @@ export function PostCard({ post }: { post: Post }) {
                 </div>
             )}
             <div className="flex items-center px-4 py-3">
-                <LikeButton postId={post.id} likes={post.likes} liked={liked} onLikedChange={setLiked} />
+                <LikeButton postId={post.id} likes={post.likes} liked={post.liked_by_user} onLikedChange={setLiked} />
             </div>
         </article>
     );

@@ -7,6 +7,7 @@ export type Post = {
     image: string | null;
     user_id: number;
     likes: number;
+    liked_by_user: boolean;
 }
 
 export type PostPage = {

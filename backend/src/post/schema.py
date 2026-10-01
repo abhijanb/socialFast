@@ -8,6 +8,7 @@ class PostOut(BaseModel):
     image: str | None = None
     user_id: int
     likes: int = 0
+    liked_by_user: bool = False
 
 
 class PostPageOut(BaseModel):

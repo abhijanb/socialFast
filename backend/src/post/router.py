@@ -7,7 +7,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from database import get_db
 from models import Post, User
 from src.auth.deps import get_current_user
-from src.post.query import getPostsPage
+from src.post.query import get_posts_page
 from src.post.request import savePost
 from src.post.schema import PostOut, PostPageOut
 from src.storage.uploads import save_upload
@@ -51,11 +51,12 @@ async def index(
     db: AsyncSession = Depends(get_db),
     cursor: Annotated[int | None, Query(ge=1)] = None,
     limit: Annotated[int, Query(ge=1, le=100)] = 20,
+    current_user: User = Depends(get_current_user),
 ) -> PostPageOut:
-    posts, next_cursor = await getPostsPage(db, cursor=cursor, limit=limit)
+    posts,liked_post_ids,next_cursor = await get_posts_page(db, cursor=cursor, limit=limit,user_id=current_user.id)
     return PostPageOut(
             items=[
-                PostOut(id=post.id, text=post.text, title=post.title, image=post.image, user_id=post.user_id, likes=post.likes_count)
+                PostOut(id=post.id, text=post.text, title=post.title, image=post.image, user_id=post.user_id, likes=post.likes_count, liked_by_user=post.id in liked_post_ids)
             for post in posts
         ],
         next_cursor=next_cursor,
