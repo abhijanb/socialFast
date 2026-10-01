@@ -2,9 +2,8 @@ from collections.abc import Sequence
 
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
+from sqlalchemy.orm import selectinload
 from models import Post
-
 
 async def getPostsPage(
     db: AsyncSession, *, cursor: int | None, limit: int

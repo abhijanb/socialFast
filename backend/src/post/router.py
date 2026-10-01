@@ -54,8 +54,8 @@ async def index(
 ) -> PostPageOut:
     posts, next_cursor = await getPostsPage(db, cursor=cursor, limit=limit)
     return PostPageOut(
-        items=[
-            PostOut(id=post.id, text=post.text, title=post.title, image=post.image, user_id=post.user_id)
+            items=[
+                PostOut(id=post.id, text=post.text, title=post.title, image=post.image, user_id=post.user_id, likes=post.likes_count)
             for post in posts
         ],
         next_cursor=next_cursor,

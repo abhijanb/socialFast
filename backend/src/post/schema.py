@@ -7,6 +7,7 @@ class PostOut(BaseModel):
     title: str | None = None
     image: str | None = None
     user_id: int
+    likes: int = 0
 
 
 class PostPageOut(BaseModel):

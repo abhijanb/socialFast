@@ -23,6 +23,7 @@ class Post(Base):
     text: Mapped[str] = mapped_column(String(255), nullable=False)
     title: Mapped[str | None] = mapped_column(String(255), nullable=True)
     image: Mapped[str | None] = mapped_column(String(255), nullable=True)
+    likes_count: Mapped[int] = mapped_column(default=0, nullable=False)
 
     user_id: Mapped[int] = mapped_column(ForeignKey("users.id", ondelete="CASCADE"), index=True)
     user: Mapped["User"] = relationship(back_populates="posts")

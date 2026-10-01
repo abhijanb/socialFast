@@ -1,10 +1,13 @@
 import Image from "next/image";
-import { Heart } from "lucide-react";
+import { useState } from "react";
 import { getImageUrl } from "@/core/getImageUrl";
 import type { Post } from "@/features/post/create/api";
+import { LikeButton } from "@/features/post/_child/like/components/LikeButton";
 
 export function PostCard({ post }: { post: Post }) {
     const imageSrc = post.image ? getImageUrl(post.image) : null;
+    const [liked, setLiked] = useState(false);
+
     return (
         <article className="overflow-hidden rounded-xl border border-neutral-200 bg-white shadow-sm">
             <div className="px-4 pt-4">
@@ -24,9 +27,7 @@ export function PostCard({ post }: { post: Post }) {
                 </div>
             )}
             <div className="flex items-center px-4 py-3">
-                <button type="button" aria-label="Like post">
-                    <Heart className="size-6 text-neutral-600" />
-                </button>
+                <LikeButton postId={post.id} likes={post.likes} liked={liked} onLikedChange={setLiked} />
             </div>
         </article>
     );

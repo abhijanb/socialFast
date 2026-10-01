@@ -6,6 +6,7 @@ export type Post = {
     title: string | null;
     image: string | null;
     user_id: number;
+    likes: number;
 }
 
 export type PostPage = {
