@@ -44,7 +44,7 @@ export function ProfileAvatar({
   return (
     <div
       aria-label={username}
-      className={`${classes} flex items-center justify-center bg-neutral-200 font-medium text-neutral-700`}
+      className={`${classes} flex items-center justify-center bg-gradient-to-br from-accent-100 to-accent-200 font-semibold text-accent-700 dark:from-accent-800 dark:to-accent-900 dark:text-accent-300`}
     >
       {getInitials(username)}
     </div>

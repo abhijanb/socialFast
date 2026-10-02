@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Plus } from "lucide-react";
 import { ProfileAvatar } from "@/features/profile/ProfileAvatar";
 
 type NavbarActionsProps = {
@@ -8,13 +9,6 @@ type NavbarActionsProps = {
     onLogout: () => void;
 };
 
-/**
- * NavbarActions — right-side actions of the authenticated Navbar.
- *
- * Renders "+ New post" link, profile avatar link, and desktop "Log out"
- * button. Used inside `Navbar` header row; hidden on mobile except avatar
- * (mobile links live in `NavbarMobile`).
- */
 export function NavbarActions({
     username,
     avatar,
@@ -25,13 +19,18 @@ export function NavbarActions({
         <div className="flex items-center gap-2">
             <Link
                 href="/post/create"
-                className="hidden rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white hover:bg-neutral-700 md:inline-flex"
+                className="hidden items-center gap-1.5 rounded-lg bg-accent-600 px-3 py-1.5 text-sm font-medium text-white shadow-soft transition-all duration-200 hover:bg-accent-700 hover:shadow-lift md:inline-flex"
             >
-                + New post
+                <Plus className="size-3.5" />
+                New post
             </Link>
 
             {username ? (
-                <Link href="/profile" aria-label={username}>
+                <Link
+                    href="/profile"
+                    aria-label={username}
+                    className="rounded-full ring-2 ring-transparent transition-all duration-200 hover:ring-accent-200"
+                >
                     <ProfileAvatar username={username} src={avatar} size="sm" />
                 </Link>
             ) : null}
@@ -40,7 +39,7 @@ export function NavbarActions({
                 type="button"
                 onClick={onLogout}
                 disabled={isLoggingOut}
-                className="hidden rounded-md px-3 py-1.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100 disabled:opacity-50 md:inline-flex"
+                className="hidden rounded-lg px-3 py-1.5 text-sm font-medium text-text-secondary transition-colors hover:bg-surface-sunken hover:text-text-primary disabled:opacity-50 md:inline-flex"
             >
                 Log out
             </button>

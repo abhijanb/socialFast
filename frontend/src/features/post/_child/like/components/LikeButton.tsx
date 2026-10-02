@@ -19,6 +19,7 @@ export function LikeButton({ postId, likes, liked, onLikedChange }: LikeButtonPr
     const [likePost, { isLoading: isLiking }] = useLikePostMutation();
     const [unlikePost, { isLoading: isUnliking }] = useUnlikePostMutation();
     const [displayLikes, setDisplayLikes] = useState(likes);
+    const [animating, setAnimating] = useState(false);
     const busy = isLiking || isUnliking;
 
     useEffect(() => {
@@ -32,6 +33,8 @@ export function LikeButton({ postId, likes, liked, onLikedChange }: LikeButtonPr
 
         onLikedChange(newLiked);
         setDisplayLikes(newLiked ? displayLikes + 1 : displayLikes - 1);
+        setAnimating(true);
+        setTimeout(() => setAnimating(false), 300);
 
         if (liked) {
             try {
@@ -67,10 +70,19 @@ export function LikeButton({ postId, likes, liked, onLikedChange }: LikeButtonPr
                 disabled={busy}
                 aria-label={liked ? "Unlike post" : "Like post"}
                 aria-pressed={liked}
+                className="rounded-full p-1.5 transition-colors hover:bg-surface-sunken"
             >
-                <Heart className={liked ? "size-6 fill-red-500 text-red-500" : "size-6 text-neutral-600"} />
+                <Heart
+                    className={`size-5 transition-all duration-200 ${
+                        liked
+                            ? "fill-red-500 text-red-500"
+                            : "text-text-tertiary hover:text-red-400"
+                    } ${animating ? "animate-heart-pop" : ""}`}
+                />
             </button>
-            <span className="text-sm text-neutral-600">{displayLikes}</span>
+            <span className="text-sm font-medium text-text-secondary tabular-nums">
+                {displayLikes}
+            </span>
         </div>
     );
 }

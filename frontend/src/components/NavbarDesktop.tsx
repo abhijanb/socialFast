@@ -8,19 +8,22 @@ type NavbarDesktopProps = {
 export function NavbarDesktop({ pathname }: NavbarDesktopProps) {
     return (
         <div className="hidden items-center gap-1 md:flex">
-            {NAV_LINKS.map((link) => (
-                <Link
-                    key={link.href}
-                    href={link.href}
-                    className={
-                        pathname === link.href
-                            ? "rounded-md bg-neutral-900 px-3 py-1.5 text-sm font-medium text-white"
-                            : "rounded-md px-3 py-1.5 text-sm font-medium text-neutral-600 hover:bg-neutral-100 hover:text-neutral-900"
-                    }
-                >
-                    {link.label}
-                </Link>
-            ))}
+            {NAV_LINKS.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                    <Link
+                        key={link.href}
+                        href={link.href}
+                        className={`relative rounded-lg px-3 py-1.5 text-sm font-medium transition-colors duration-200 ${
+                            isActive
+                                ? "bg-accent-50 text-accent-700 dark:bg-accent-900/20 dark:text-accent-400"
+                                : "text-text-secondary hover:bg-surface-sunken hover:text-text-primary"
+                        }`}
+                    >
+                        {link.label}
+                    </Link>
+                );
+            })}
         </div>
     );
 }
