@@ -42,5 +42,9 @@ app.include_router(auth_router)
 app.include_router(postRouter)
 app.include_router(likeRouter)
 
+@app.get("/health")
+def health():
+    return {"status": "ok"}
+
 # Serve DB-stored paths like "uploads/posts/<file>" at "/uploads/...".
 app.mount("/uploads", StaticFiles(directory=get_upload_dir()), name="uploads")
