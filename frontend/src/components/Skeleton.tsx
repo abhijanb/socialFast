@@ -1,18 +1,20 @@
 export function PostCardSkeleton() {
   return (
-    <div className="animate-pulse rounded-2xl border border-border bg-surface-raised p-4 shadow-soft">
-      <div className="flex items-center gap-3">
-        <div className="size-10 rounded-full bg-surface-sunken" />
-        <div className="flex-1 space-y-2">
-          <div className="h-3 w-24 rounded-full bg-surface-sunken" />
-          <div className="h-2.5 w-16 rounded-full bg-surface-sunken" />
+    <div className="animate-pulse rounded-3xl border border-border bg-surface-raised p-6 shadow-soft">
+      <div className="space-y-3">
+        <div className="h-4 w-1/3 rounded-full bg-surface-sunken" />
+        <div className="space-y-2">
+          <div className="h-3 w-full rounded-full bg-surface-sunken" />
+          <div className="h-3 w-5/6 rounded-full bg-surface-sunken" />
+          <div className="h-3 w-2/3 rounded-full bg-surface-sunken" />
         </div>
       </div>
-      <div className="mt-4 space-y-2">
-        <div className="h-3 w-3/4 rounded-full bg-surface-sunken" />
-        <div className="h-3 w-1/2 rounded-full bg-surface-sunken" />
+      <div className="mt-5 border-t border-border pt-4">
+        <div className="flex items-center gap-2">
+          <div className="size-5 rounded-full bg-surface-sunken" />
+          <div className="h-3 w-8 rounded-full bg-surface-sunken" />
+        </div>
       </div>
-      <div className="mt-4 aspect-[4/5] rounded-xl bg-surface-sunken" />
     </div>
   );
 }

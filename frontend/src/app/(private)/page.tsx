@@ -14,7 +14,7 @@ export default function FeedPage() {
   })
   return (
     <div className="flex min-h-[80vh] flex-col items-center bg-surface px-4 py-10">
-      <div className="flex w-full max-w-lg flex-col gap-5">
+      <div className="flex w-full max-w-xl flex-col gap-6">
         {isLoading && (
           <>
             <PostCardSkeleton />
@@ -27,12 +27,12 @@ export default function FeedPage() {
         )}
         {!isLoading && !error && data?.items.length === 0 && (
           <EmptyState
-            title="No posts yet"
-            description="Be the first to share something with the community."
+            title="Your feed is quiet"
+            description="Be the first to share something — create a post and start the conversation."
           />
         )}
-        {data && data.items.map((post) => (
-          <PostCard key={post.id} post={post} />
+        {data && data.items.map((post, i) => (
+          <PostCard key={post.id} post={post} index={i} />
         ))}
         {data?.next_cursor != null && (
           <button
