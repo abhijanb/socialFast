@@ -1,3 +1,4 @@
+from sqlalchemy.orm import DeclarativeBase
 import os
 from collections.abc import AsyncGenerator
 from pathlib import Path
@@ -74,8 +75,11 @@ AsyncSessionLocal = async_sessionmaker(
     class_=AsyncSession,
 )
 
-
 # 4. Injected dependency for FastAPI routes
 async def get_db() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionLocal() as session:
         yield session
+
+# 5. Create the Base class for models
+class Base(DeclarativeBase):
+    pass
