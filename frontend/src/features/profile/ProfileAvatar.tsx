@@ -1,5 +1,6 @@
 import Image from "next/image";
 import { getInitials } from "./getInitials";
+import { getImageUrl } from "@/core/getImageUrl";
 
 type ProfileAvatarSize = "sm" | "md" | "lg" | "xl";
 
@@ -30,7 +31,7 @@ export function ProfileAvatar({
   if (src) {
     return (
       <Image
-        src={src}
+        src={getImageUrl(src)}
         alt={alt ?? username}
         aria-label={username}
         fill
