@@ -1,6 +1,7 @@
 import Image from "next/image";
 import { useState } from "react";
 import { getImageUrl } from "@/core/getImageUrl";
+import { ProfileAvatar } from "@/features/profile/ProfileAvatar";
 import type { Post } from "@/features/post/create/api";
 import { LikeButton } from "@/features/post/_child/like/components/LikeButton";
 
@@ -13,6 +14,18 @@ export function PostCard({ post, index = 0 }: { post: Post; index?: number }) {
     }
 
     return <ImagePostCard post={post} imageSrc={imageSrc} liked={liked} onLikedChange={setLiked} index={index} />;
+}
+
+function PostAuthor({ username }: { username: string | null }) {
+    if (!username) return null;
+    return (
+        <div className="mb-2 flex items-center gap-2">
+            <ProfileAvatar username={username} size="sm" />
+            <p className="text-sm font-medium text-accent-600">
+                @{username}
+            </p>
+        </div>
+    );
 }
 
 function TextPostCard({
@@ -33,6 +46,7 @@ function TextPostCard({
         >
             <div className="absolute left-0 top-0 h-full w-1 bg-gradient-to-b from-accent-400 to-accent-600 opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
             <div className="pl-2">
+                <PostAuthor username={post.username} />
                 {post.title && (
                     <h2 className="font-display text-xl font-normal italic tracking-tight text-text-primary">
                         {post.title}
@@ -68,6 +82,7 @@ function ImagePostCard({
             style={{ animationDelay: `${index * 60}ms` }}
         >
             <div className="px-5 pt-5">
+                <PostAuthor username={post.username} />
                 {post.title && (
                     <h2 className="text-lg font-semibold tracking-tight text-text-primary">
                         {post.title}

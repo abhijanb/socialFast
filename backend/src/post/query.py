@@ -1,3 +1,4 @@
+from models import User
 from models import Like
 from collections.abc import Sequence
 
@@ -11,10 +12,11 @@ async def get_posts_page(
     user_id: int,
     cursor: int | None,
     limit: int,
-) -> tuple[Sequence[Post], set[int], int | None]:
+) -> tuple[Sequence[tuple[Post, str]], set[int], int | None]:
 
     stmt = (
-        select(Post)
+        select(Post, User.username)
+        .join(User, User.id == Post.user_id)
         .order_by(Post.id.desc())
         .limit(limit + 1)
     )
@@ -22,11 +24,11 @@ async def get_posts_page(
     if cursor is not None:
         stmt = stmt.where(Post.id < cursor)
 
-    rows = (await db.execute(stmt)).scalars().all()
+    rows = (await db.execute(stmt)).all()
 
     page = rows[:limit]
 
-    post_ids = [post.id for post in page]
+    post_ids = [post.id for post, username in page]
 
     like_stmt = select(Like.post_id).where(
         Like.user_id == user_id,
@@ -37,8 +39,8 @@ async def get_posts_page(
         (await db.execute(like_stmt)).scalars().all()
     )
 
-    next_cursor = (
-        page[-1].id
+    next_cursor = ( 
+        page[-1][0].id
         if len(rows) > limit
         else None
     )

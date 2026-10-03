@@ -9,6 +9,7 @@ class PostOut(BaseModel):
     user_id: int
     likes: int = 0
     liked_by_user: bool = False
+    username: str | None = None
 
 
 class PostPageOut(BaseModel):

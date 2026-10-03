@@ -56,8 +56,8 @@ async def index(
     posts,liked_post_ids,next_cursor = await get_posts_page(db, cursor=cursor, limit=limit,user_id=current_user.id)
     return PostPageOut(
             items=[
-                PostOut(id=post.id, text=post.text, title=post.title, image=post.image, user_id=post.user_id, likes=post.likes_count, liked_by_user=post.id in liked_post_ids)
-            for post in posts
+                PostOut(id=post.id, text=post.text, title=post.title, image=post.image, user_id=post.user_id, likes=post.likes_count, username=username, liked_by_user=post.id in liked_post_ids)
+            for post, username in posts
         ],
         next_cursor=next_cursor,
     )

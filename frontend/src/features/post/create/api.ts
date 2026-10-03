@@ -8,6 +8,7 @@ export type Post = {
     user_id: number;
     likes: number;
     liked_by_user: boolean;
+    username: string | null;
 }
 
 export type PostPage = {
